@@ -4,16 +4,19 @@
 package com.appsdeveloperblog.app.ws.shared.dto;
 
 import java.io.Serializable;
+import java.util.List;
+
+import com.appsdeveloperblog.app.ws.ui.model.request.AddressRequestModel;
 
 /**
  * @author saba
  *
  */
-public class UserDto implements Serializable{
+public class UserDto implements Serializable {
 
 	private static final long serialVersionUID = 2558792700342535296L;
 	private long id;
-	private String userId; 
+	private String userId;
 	private String firstName;
 	private String lastName;
 	private String email;
@@ -21,6 +24,8 @@ public class UserDto implements Serializable{
 	private String encryptedPassword;
 	private String emailVerificationToken;
 	private Boolean emailVerificationStatus;
+	// new field for address
+	private List<AddressDTO> addresses;
 
 	public String getUserId() {
 		return userId;
@@ -140,6 +145,14 @@ public class UserDto implements Serializable{
 	 */
 	public void setEmailVerificationStatus(Boolean emailVerificationStatus) {
 		this.emailVerificationStatus = emailVerificationStatus;
+	}
+
+	public List<AddressDTO> getAddresses() {
+		return addresses;
+	}
+
+	public void setAddresses(List<AddressDTO> addresses) {
+		this.addresses = addresses;
 	}
 
 }

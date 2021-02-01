@@ -3,6 +3,8 @@
  */
 package com.appsdeveloperblog.app.ws.ui.model.request;
 
+import java.util.List;
+
 /**
  * @author saba
  *
@@ -13,6 +15,8 @@ public class UserDetailsRequestModel {
 	private String lastName;
 	private String email;
 	private String password;
+	// new field for address
+	private List<AddressRequestModel> addresses;
 
 	/**
 	 * @return the firstName
@@ -69,5 +73,15 @@ public class UserDetailsRequestModel {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+
+	public List<AddressRequestModel> getAddresses() {
+		return addresses;
+	}
+
+	public void setAddresses(List<AddressRequestModel> addresses) {
+		this.addresses = addresses;
+	}
+
+	
 
 }

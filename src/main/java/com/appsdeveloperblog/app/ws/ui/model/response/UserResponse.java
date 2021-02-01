@@ -3,6 +3,8 @@
  */
 package com.appsdeveloperblog.app.ws.ui.model.response;
 
+import java.util.List;
+
 /**
  * @author saba
  *
@@ -13,6 +15,7 @@ public class UserResponse {
 	private String firstName;
 	private String lastName;
 	private String email;
+	private List<AddressResponse> addresses;
 
 	/**
 	 * @return the userId
@@ -68,6 +71,14 @@ public class UserResponse {
 	 */
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public List<AddressResponse> getAddresses() {
+		return addresses;
+	}
+
+	public void setAddresses(List<AddressResponse> addresses) {
+		this.addresses = addresses;
 	}
 
 }
