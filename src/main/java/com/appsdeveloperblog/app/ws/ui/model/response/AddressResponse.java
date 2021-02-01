@@ -3,11 +3,13 @@
  */
 package com.appsdeveloperblog.app.ws.ui.model.response;
 
+import org.springframework.hateoas.RepresentationModel;
+
 /**
  * @author saba
  *
  */
-public class AddressResponse { // extends ResourceSupport{
+public class AddressResponse { //extends RepresentationModel<AddressResponse>{
 
 	private String addressId;
 	private String city;

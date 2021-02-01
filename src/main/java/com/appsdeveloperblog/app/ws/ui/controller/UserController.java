@@ -5,12 +5,16 @@ package com.appsdeveloperblog.app.ws.ui.controller;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,6 +38,7 @@ import com.appsdeveloperblog.app.ws.ui.model.response.OperationStatusModel;
 import com.appsdeveloperblog.app.ws.ui.model.response.RequestOperationName;
 import com.appsdeveloperblog.app.ws.ui.model.response.RequestOperationStatus;
 import com.appsdeveloperblog.app.ws.ui.model.response.UserResponse;
+import com.mysql.cj.x.protobuf.MysqlxDatatypes.Array;
 
 /**
  * @author saba
@@ -152,12 +157,38 @@ public class UserController {
 
 	@GetMapping(path = "/{userId}/addresses/{addressId}", produces = { MediaType.APPLICATION_XML_VALUE,
 			MediaType.APPLICATION_JSON_VALUE })
-	public AddressResponse getUserAddress(@PathVariable String addressId) {
+	//public AddressResponse getUserAddress(@PathVariable String userId, @PathVariable String addressId) {
+	public EntityModel<AddressResponse> getUserAddress(@PathVariable String userId, @PathVariable String addressId) {
 
 		AddressDTO addressDTO = addressService.getAddress(addressId);
 
 		ModelMapper modelMapper = new ModelMapper();
+		AddressResponse returnValue = modelMapper.map(addressDTO, AddressResponse.class);
+		Link userLink = WebMvcLinkBuilder.linkTo(UserController.class).slash(userId).withRel("user");
 
-		return  modelMapper.map(addressDTO, AddressResponse.class);
+		//Link userAddressLink = WebMvcLinkBuilder.linkTo(UserController.class).slash(userId).slash("addresses").withRel("addresses");
+		
+		//methodOn method instead of .slash method
+		Link userAddressLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class).getUserAddresses(userId))
+				//.slash(userId)
+				//.slash("addresses")
+				.withRel("addresses");
+
+		//Link selfLink = WebMvcLinkBuilder.linkTo(UserController.class).slash(userId).slash("addresses").slash(addressId).withSelfRel();
+		
+		Link selfLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class).getUserAddress(userId, addressId))
+				//.slash(userId)
+				//.slash("addresses")
+				//.slash(addressId)
+				.withSelfRel();
+		
+		//for entityModel we can remove it from here and add it directly at line 180
+		//returnValue.add(userLink);
+		//returnValue.add(userAddressLink);
+		//returnValue.add(selfLink);
+		
+		//if using EntityModel of hateoas then no need to use extends RepresentationModel<AddressResponse>
+		return EntityModel.of(returnValue, Arrays.asList(userLink, userAddressLink, selfLink));
+		//return returnValue;
 	}
 }
