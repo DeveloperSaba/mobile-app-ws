@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.appsdeveloperblog.app.ws.exception.UserServiceException;
+import com.appsdeveloperblog.app.ws.service.AddressService;
 import com.appsdeveloperblog.app.ws.service.UserService;
 import com.appsdeveloperblog.app.ws.shared.dto.AddressDTO;
 import com.appsdeveloperblog.app.ws.shared.dto.UserDto;
@@ -44,6 +45,9 @@ public class UserController {
 
 	@Autowired
 	UserService userService;
+
+	@Autowired
+	AddressService addressService;
 
 	@GetMapping(path = "/{id}") // , produces = MediaType.APPLICATION_XML_VALUE)
 	public UserResponse getUser(@PathVariable String id) {
@@ -135,11 +139,25 @@ public class UserController {
 
 		List<AddressDTO> addressesDTO = addressService.getAddresses(id);
 		ModelMapper modelMapper = new ModelMapper();
-		
-		if (addressesDTO != null && addressesDTO.isEmpty()) {
-			Type listType = new TypeToken<List<AddressResponse>>() {}.getType();
+
+		if (addressesDTO != null && !addressesDTO.isEmpty()) {
+			Type listType = new TypeToken<List<AddressResponse>>() {
+			}.getType();
 			returnValue = modelMapper.map(addressesDTO, listType);
 		}
 		return returnValue;
+	}
+
+	// http://localhost:8080/mobile-app-ws/users/wZ33j1Wvef3BfpRTKxDS15bZhHGCLx/addresses/IYwpWQeVdyKTZqzyi3RrY7DI2XaJSK
+
+	@GetMapping(path = "/{userId}/addresses/{addressId}", produces = { MediaType.APPLICATION_XML_VALUE,
+			MediaType.APPLICATION_JSON_VALUE })
+	public AddressResponse getUserAddress(@PathVariable String addressId) {
+
+		AddressDTO addressDTO = addressService.getAddress(addressId);
+
+		ModelMapper modelMapper = new ModelMapper();
+
+		return  modelMapper.map(addressDTO, AddressResponse.class);
 	}
 }
