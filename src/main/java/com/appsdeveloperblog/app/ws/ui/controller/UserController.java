@@ -157,7 +157,8 @@ public class UserController {
 
 	@GetMapping(path = "/{userId}/addresses/{addressId}", produces = { MediaType.APPLICATION_XML_VALUE,
 			MediaType.APPLICATION_JSON_VALUE })
-	//public AddressResponse getUserAddress(@PathVariable String userId, @PathVariable String addressId) {
+	// public AddressResponse getUserAddress(@PathVariable String userId,
+	// @PathVariable String addressId) {
 	public EntityModel<AddressResponse> getUserAddress(@PathVariable String userId, @PathVariable String addressId) {
 
 		AddressDTO addressDTO = addressService.getAddress(addressId);
@@ -166,29 +167,54 @@ public class UserController {
 		AddressResponse returnValue = modelMapper.map(addressDTO, AddressResponse.class);
 		Link userLink = WebMvcLinkBuilder.linkTo(UserController.class).slash(userId).withRel("user");
 
-		//Link userAddressLink = WebMvcLinkBuilder.linkTo(UserController.class).slash(userId).slash("addresses").withRel("addresses");
-		
-		//methodOn method instead of .slash method
-		Link userAddressLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class).getUserAddresses(userId))
-				//.slash(userId)
-				//.slash("addresses")
+		// Link userAddressLink =
+		// WebMvcLinkBuilder.linkTo(UserController.class).slash(userId).slash("addresses").withRel("addresses");
+
+		// methodOn method instead of .slash method
+		Link userAddressLink = WebMvcLinkBuilder
+				.linkTo(WebMvcLinkBuilder.methodOn(UserController.class).getUserAddresses(userId))
+				// .slash(userId)
+				// .slash("addresses")
 				.withRel("addresses");
 
-		//Link selfLink = WebMvcLinkBuilder.linkTo(UserController.class).slash(userId).slash("addresses").slash(addressId).withSelfRel();
-		
-		Link selfLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(UserController.class).getUserAddress(userId, addressId))
-				//.slash(userId)
-				//.slash("addresses")
-				//.slash(addressId)
+		// Link selfLink =
+		// WebMvcLinkBuilder.linkTo(UserController.class).slash(userId).slash("addresses").slash(addressId).withSelfRel();
+
+		Link selfLink = WebMvcLinkBuilder
+				.linkTo(WebMvcLinkBuilder.methodOn(UserController.class).getUserAddress(userId, addressId))
+				// .slash(userId)
+				// .slash("addresses")
+				// .slash(addressId)
 				.withSelfRel();
-		
-		//for entityModel we can remove it from here and add it directly at line 180
-		//returnValue.add(userLink);
-		//returnValue.add(userAddressLink);
-		//returnValue.add(selfLink);
-		
-		//if using EntityModel of hateoas then no need to use extends RepresentationModel<AddressResponse>
+
+		// for entityModel we can remove it from here and add it directly at line 180
+		// returnValue.add(userLink);
+		// returnValue.add(userAddressLink);
+		// returnValue.add(selfLink);
+
+		// if using EntityModel of hateoas then no need to use extends
+		// RepresentationModel<AddressResponse>
 		return EntityModel.of(returnValue, Arrays.asList(userLink, userAddressLink, selfLink));
-		//return returnValue;
+		// return returnValue;
+	}
+
+	/*
+	 * http://localhost:8080/mobile-app-ws/users/email-verification?token=sdfsdf
+	 */
+	@GetMapping(path = "/email-verification", produces = { MediaType.APPLICATION_JSON_VALUE,
+			MediaType.APPLICATION_XML_VALUE })
+	public OperationStatusModel verifyEmailToken(@RequestParam(value = "token") String token) {
+
+		OperationStatusModel returnValue = new OperationStatusModel();
+		returnValue.setOperationName(RequestOperationName.VERIFY_EMAIL.name());
+
+		boolean isVerified = userService.verifyEmailToken(token);
+		if (isVerified) {
+			returnValue.setOperationResult(RequestOperationStatus.SUCCESS.name());
+		} else {
+			returnValue.setOperationResult(RequestOperationStatus.ERROR.name());
+		}
+
+		return returnValue;
 	}
 }

@@ -37,11 +37,14 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 		 * "/users").permitAll().anyRequest() .authenticated().and().addFilter(new
 		 * AuthenticationFilter(authenticationManager()));
 		 */
-		http.csrf().disable().authorizeRequests().antMatchers(HttpMethod.POST, SecurityConstants.SIGN_UP_URL).permitAll().anyRequest()
+		http.csrf().disable().authorizeRequests()
+		.antMatchers(HttpMethod.POST, SecurityConstants.SIGN_UP_URL)
+		.permitAll()
+		.antMatchers(HttpMethod.GET, SecurityConstants.VERIFICATION_EMAIL_URL)
+		.permitAll()
+		.anyRequest()
 		.authenticated().and().addFilter(getAuthenticationFilter())
-        .addFilter(new AuthorizationFilter(authenticationManager()))
-        .sessionManagement()
-        .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        .addFilter(new AuthorizationFilter(authenticationManager()));
 	}
 
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
